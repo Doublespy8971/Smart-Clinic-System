@@ -1,53 +1,106 @@
 /*
   Import the base API URL from the config file
-  Define a constant DOCTOR_API to hold the full endpoint for doctor-related actions
+*/
+import { BASE_API_URL } from "../config/config.js";
 
+/*
+  Define a constant DOCTOR_API to hold the full endpoint
+  for doctor-related actions
+*/
+const DOCTOR_API = `${BASE_API_URL}/doctor`;
 
+/*
   Function: getDoctors
   Purpose: Fetch the list of all doctors from the API
+*/
+export async function getDoctors() {
+    try {
+        const response = await fetch(`${DOCTOR_API}/findAll`);
 
-   Use fetch() to send a GET request to the DOCTOR_API endpoint
-   Convert the response to JSON
-   Return the 'doctors' array from the response
-   If there's an error (e.g., network issue), log it and return an empty array
+        const data = await response.json();
+        return data.doctors || [];   // Return the list of doctors
+    } catch (error) {
+        console.error("Error fetching doctors:", error);
+        return [];   // Return empty array on failure
+    }
+}
 
-
+/*
   Function: deleteDoctor
   Purpose: Delete a specific doctor using their ID and an authentication token
+*/
+export async function deleteDoctor(doctorId, token) {
+    try {
+        const response = await fetch(`${DOCTOR_API}/delete/${doctorId}/${token}`, {
+            method: "DELETE",
+        });
 
-   Use fetch() with the DELETE method
-    - The URL includes the doctor ID and token as path parameters
-   Convert the response to JSON
-   Return an object with:
-    - success: true if deletion was successful
-    - message: message from the server
-   If an error occurs, log it and return a default failure response
+        const data = await response.json();
 
+        return {
+            success: data.success || false,
+            message: data.message || "Unable to delete doctor.",
+        };
+    } catch (error) {
+        console.error("Error deleting doctor:", error);
 
+        return {
+            success: false,
+            message: "An error occurred while deleting the doctor.",
+        };
+    }
+}
+
+/*
   Function: saveDoctor
   Purpose: Save (create) a new doctor using a POST request
+*/
+export async function saveDoctor(doctor, token) {
+    try {
+        const response = await fetch(`${DOCTOR_API}/save/${token}`, {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json",
+            },
+            body: JSON.stringify(doctor),
+        });
 
-   Use fetch() with the POST method
-    - URL includes the token in the path
-    - Set headers to specify JSON content type
-    - Convert the doctor object to JSON in the request body
+        const data = await response.json();
 
-   Parse the JSON response and return:
-    - success: whether the request succeeded
-    - message: from the server
+        return {
+            success: data.success || false,
+            message: data.message || "Unable to save doctor.",
+        };
+    } catch (error) {
+        console.error("Error saving doctor:", error);
 
-   Catch and log errors
-    - Return a failure response if an error occurs
+        return {
+            success: false,
+            message: "An error occurred while saving the doctor.",
+        };
+    }
+}
 
-
+/*
   Function: filterDoctors
   Purpose: Fetch doctors based on filtering criteria (name, time, and specialty)
-
-   Use fetch() with the GET method
-    - Include the name, time, and specialty as URL path parameters
-   Check if the response is OK
-    - If yes, parse and return the doctor data
-    - If no, log the error and return an object with an empty 'doctors' array
-
-   Catch any other errors, alert the user, and return a default empty result
 */
+export async function filterDoctors(name, time, specialty) {
+    try {
+        const response = await fetch(
+            `${DOCTOR_API}/filter/${name}/${time}/${specialty}`
+        );
+
+        if (!response.ok) {
+            console.error("Failed to filter doctors:", response.status);
+            return { doctors: [] };
+        }
+
+        const data = await response.json();
+        return data;
+    } catch (error) {
+        console.error("Error filtering doctors:", error);
+        alert("Something went wrong while filtering doctors.");
+        return { doctors: [] };
+    }
+}
