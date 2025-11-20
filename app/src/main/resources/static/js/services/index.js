@@ -3,13 +3,13 @@
   Import the base API URL from the config file
 */
 import { openModal } from "../utils/util.js";
-import { BASE_API_URL } from "../config/config.js";
+import { API_BASE_URL } from "../config/config.js";
 
 /*
-  Define constants for the admin and doctor login API endpoints
+  Define API endpoints for admin and doctor login
 */
-const ADMIN_API = `${BASE_API_URL}/admin/login`;
-const DOCTOR_API = `${BASE_API_URL}/doctor/login`;
+const ADMIN_API = `${API_BASE_URL}/admin/login`;
+const DOCTOR_API = `${API_BASE_URL}/doctor/login`;
 
 /*
   Use the window.onload event to attach listeners after DOM loads
