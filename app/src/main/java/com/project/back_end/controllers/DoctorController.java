@@ -24,12 +24,20 @@ public class DoctorController {
         this.service = service;
     }
 
+    private String extractToken(String token) {
+        if (token != null && token.startsWith("Bearer ")) {
+            return token.substring(7);
+        }
+        return token;
+    }
+
     // 3. Get Doctor Availability
-    @GetMapping("/availability/{user}/{doctorId}/{date}/{token}")
+    @GetMapping("/availability/{user}/{doctorId}/{date}")
     public ResponseEntity<?> getDoctorAvailability(@PathVariable String user,
                                                    @PathVariable Long doctorId,
                                                    @PathVariable String date,
-                                                   @PathVariable String token) {
+                                                   @RequestHeader("Authorization") String token) {
+        token = extractToken(token);
         if (!service.validateToken(token, user)) {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Invalid or expired token");
         }
@@ -48,8 +56,9 @@ public class DoctorController {
     }
 
     // 5. Save Doctor
-    @PostMapping("/save/{token}")
-    public ResponseEntity<?> saveDoctor(@RequestBody Doctor doctor, @PathVariable String token) {
+    @PostMapping("/save")
+    public ResponseEntity<?> saveDoctor(@RequestBody Doctor doctor, @RequestHeader("Authorization") String token) {
+        token = extractToken(token);
         if (!service.validateToken(token, "admin")) {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Invalid or expired token");
         }
@@ -72,8 +81,9 @@ public class DoctorController {
     }
 
     // 7. Update Doctor
-    @PutMapping("/update/{token}")
-    public ResponseEntity<?> updateDoctor(@RequestBody Doctor doctor, @PathVariable String token) {
+    @PutMapping("/update")
+    public ResponseEntity<?> updateDoctor(@RequestBody Doctor doctor, @RequestHeader("Authorization") String token) {
+        token = extractToken(token);
         if (!service.validateToken(token, "admin")) {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Invalid or expired token");
         }
@@ -89,8 +99,9 @@ public class DoctorController {
     }
 
     // 8. Delete Doctor
-    @DeleteMapping("/delete/{doctorId}/{token}")
-    public ResponseEntity<?> deleteDoctor(@PathVariable Long doctorId, @PathVariable String token) {
+    @DeleteMapping("/delete/{doctorId}")
+    public ResponseEntity<?> deleteDoctor(@PathVariable Long doctorId, @RequestHeader("Authorization") String token) {
+        token = extractToken(token);
         if (!service.validateToken(token, "admin")) {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Invalid or expired token");
         }

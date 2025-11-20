@@ -22,11 +22,19 @@ public class AppointmentController {
         this.service = service;
     }
 
+    private String extractToken(String token) {
+        if (token != null && token.startsWith("Bearer ")) {
+            return token.substring(7);
+        }
+        return token;
+    }
+
     // 3. Get Appointments
-    @GetMapping("/get/{token}")
+    @GetMapping("/get")
     public ResponseEntity<?> getAppointments(@RequestParam String date,
                                              @RequestParam(required = false) String patientName,
-                                             @PathVariable String token) {
+                                             @RequestHeader("Authorization") String token) {
+        token = extractToken(token);
         if (!service.validateToken(token, "doctor")) {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Invalid or expired token");
         }
@@ -37,9 +45,10 @@ public class AppointmentController {
     }
 
     // 4. Book Appointment
-    @PostMapping("/book/{token}")
+    @PostMapping("/book")
     public ResponseEntity<?> bookAppointment(@RequestBody Appointment appointment,
-                                             @PathVariable String token) {
+                                             @RequestHeader("Authorization") String token) {
+        token = extractToken(token);
         if (!service.validateToken(token, "patient")) {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Invalid or expired token");
         }
@@ -53,9 +62,10 @@ public class AppointmentController {
     }
 
     // 5. Update Appointment
-    @PutMapping("/update/{token}")
+    @PutMapping("/update")
     public ResponseEntity<?> updateAppointment(@RequestBody Appointment appointment,
-                                               @PathVariable String token) {
+                                               @RequestHeader("Authorization") String token) {
+        token = extractToken(token);
         if (!service.validateToken(token, "patient")) {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Invalid or expired token");
         }
@@ -69,9 +79,10 @@ public class AppointmentController {
     }
 
     // 6. Cancel Appointment
-    @DeleteMapping("/cancel/{appointmentId}/{token}")
+    @DeleteMapping("/cancel/{appointmentId}")
     public ResponseEntity<?> cancelAppointment(@PathVariable Long appointmentId,
-                                               @PathVariable String token) {
+                                               @RequestHeader("Authorization") String token) {
+        token = extractToken(token);
         if (!service.validateToken(token, "patient")) {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Invalid or expired token");
         }

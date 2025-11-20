@@ -20,9 +20,17 @@ public class PatientController {
         this.service = service;
     }
 
+    private String extractToken(String token) {
+        if (token != null && token.startsWith("Bearer ")) {
+            return token.substring(7);
+        }
+        return token;
+    }
+
     // 3. Get Patient Details
-    @GetMapping("/get/{token}")
-    public ResponseEntity<?> getPatient(@PathVariable String token) {
+    @GetMapping("/get")
+    public ResponseEntity<?> getPatient(@RequestHeader("Authorization") String token) {
+        token = extractToken(token);
         if (!service.validateToken(token, "patient")) {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Invalid or expired token");
         }
@@ -57,10 +65,11 @@ public class PatientController {
     }
 
     // 6. Get Patient Appointments
-    @GetMapping("/appointments/{patientId}/{token}/{user}")
+    @GetMapping("/appointments/{patientId}/{user}")
     public ResponseEntity<?> getPatientAppointment(@PathVariable Long patientId,
-                                                   @PathVariable String token,
+                                                   @RequestHeader("Authorization") String token,
                                                    @PathVariable String user) {
+        token = extractToken(token);
         if (!service.validateToken(token, user)) {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Invalid or expired token");
         }
@@ -69,10 +78,11 @@ public class PatientController {
     }
 
     // 7. Filter Patient Appointments
-    @GetMapping("/appointments/filter/{condition}/{name}/{token}")
+    @GetMapping("/appointments/filter/{condition}/{name}")
     public ResponseEntity<?> filterPatientAppointment(@PathVariable String condition,
                                                       @PathVariable String name,
-                                                      @PathVariable String token) {
+                                                      @RequestHeader("Authorization") String token) {
+        token = extractToken(token);
         if (!service.validateToken(token, "patient")) {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Invalid or expired token");
         }
