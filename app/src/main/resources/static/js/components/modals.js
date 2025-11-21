@@ -43,6 +43,9 @@ export function openModal(type) {
         <input type="text" id="email" placeholder="Email" class="input-field">
         <input type="password" id="password" placeholder="Password" class="input-field">
         <button class="dashboard-btn" id="loginBtn">Login</button>
+        <p style="margin-top: 15px; font-size: 14px; text-align: center;">
+            Don't have an account? <a href="#" id="switchToSignup" style="color: #015c5d; font-weight: bold; text-decoration: none;">Sign Up</a>
+        </p>
       `;
   }
   else if (type === "patientSignup") {
@@ -85,6 +88,10 @@ export function openModal(type) {
 
   if (type === "patientLogin") {
     document.getElementById("loginBtn").addEventListener("click", window.loginPatient);
+    document.getElementById("switchToSignup").addEventListener("click", (e) => {
+      e.preventDefault();
+      openModal("patientSignup");
+    });
   }
 
   if (type === 'addDoctor') {

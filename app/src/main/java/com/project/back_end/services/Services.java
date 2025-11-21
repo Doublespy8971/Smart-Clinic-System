@@ -23,11 +23,11 @@ public class Services {
     private final PatientService patientService;
 
     public Services(TokenService tokenService,
-                    AdminRepository adminRepository,
-                    DoctorRepository doctorRepository,
-                    PatientRepository patientRepository,
-                    DoctorService doctorService,
-                    PatientService patientService) {
+            AdminRepository adminRepository,
+            DoctorRepository doctorRepository,
+            PatientRepository patientRepository,
+            DoctorService doctorService,
+            PatientService patientService) {
 
         this.tokenService = tokenService;
         this.adminRepository = adminRepository;
@@ -57,7 +57,7 @@ public class Services {
 
             // generate token using admin ID & username
             String token = tokenService.generateToken(admin.getId(), admin.getUsername());
-            return ResponseEntity.ok(token);
+            return ResponseEntity.ok(java.util.Collections.singletonMap("token", token));
 
         } catch (Exception e) {
             e.printStackTrace();
@@ -97,7 +97,7 @@ public class Services {
 
             // generate token using patient ID and email
             String token = tokenService.generateToken(patient.getId(), patient.getEmail());
-            return ResponseEntity.ok(token);
+            return ResponseEntity.ok(java.util.Collections.singletonMap("token", token));
 
         } catch (Exception e) {
             e.printStackTrace();
@@ -116,7 +116,6 @@ public class Services {
         }
     }
 
-
     // 9. Filter Patient Appointments
     public ResponseEntity<?> filterPatient(String token, String condition, String doctorName) {
         try {
@@ -131,8 +130,7 @@ public class Services {
 
             if (condition != null && doctorName != null) {
                 return ResponseEntity.ok(
-                        patientService.filterByDoctorAndCondition(patientId, doctorName, condition)
-                );
+                        patientService.filterByDoctorAndCondition(patientId, doctorName, condition));
             }
 
             if (condition != null) {

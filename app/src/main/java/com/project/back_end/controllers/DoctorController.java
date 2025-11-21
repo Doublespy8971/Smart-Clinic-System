@@ -34,9 +34,9 @@ public class DoctorController {
     // 3. Get Doctor Availability
     @GetMapping("/availability/{user}/{doctorId}/{date}")
     public ResponseEntity<?> getDoctorAvailability(@PathVariable String user,
-                                                   @PathVariable Long doctorId,
-                                                   @PathVariable String date,
-                                                   @RequestHeader("Authorization") String token) {
+            @PathVariable Long doctorId,
+            @PathVariable String date,
+            @RequestHeader("Authorization") String token) {
         token = extractToken(token);
         if (!service.validateToken(token, user)) {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Invalid or expired token");
@@ -77,7 +77,11 @@ public class DoctorController {
     @PostMapping("/login")
     public ResponseEntity<?> doctorLogin(@RequestBody Login login) {
         String response = doctorService.validateDoctor(login.getEmail(), login.getPassword());
-        return ResponseEntity.ok(response);
+        if ("Doctor not found".equals(response) || "Invalid password".equals(response)) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
+                    .body(java.util.Collections.singletonMap("message", response));
+        }
+        return ResponseEntity.ok(java.util.Collections.singletonMap("token", response));
     }
 
     // 7. Update Doctor
@@ -119,8 +123,8 @@ public class DoctorController {
     // 9. Filter Doctors
     @GetMapping("/filter/{name}/{time}/{speciality}")
     public ResponseEntity<?> filter(@PathVariable(required = false) String name,
-                                    @PathVariable(required = false) String time,
-                                    @PathVariable(required = false) String speciality) {
+            @PathVariable(required = false) String time,
+            @PathVariable(required = false) String speciality) {
         List<Doctor> doctors = service.filterDoctor(name, speciality, time);
         return ResponseEntity.ok(doctors);
     }

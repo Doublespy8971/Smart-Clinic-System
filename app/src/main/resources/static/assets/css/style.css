@@ -190,11 +190,19 @@
   .close {
     color: #aaa;
     position: absolute;
-    right: 20px;
-    top: 15px;
-    font-size: 28px;
+    right: 15px;
+    top: 10px;
+    font-size: 20px; /* Reduced from 28px */
     font-weight: bold;
     cursor: pointer;
+    background: #f0f0f0;
+    width: 30px;
+    height: 30px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.2s ease;
   }
   
   .close:hover {
