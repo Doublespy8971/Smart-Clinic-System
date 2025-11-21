@@ -2,8 +2,9 @@
   Import the openModal function to handle showing login modals
   Import the base API URL from the config file
 */
-import { openModal } from "../utils/util.js";
+import { openModal } from "../components/modals.js";
 import { API_BASE_URL } from "../config/config.js";
+import { patientSignup, patientLogin } from "./patientServices.js";
 
 /*
   Define API endpoints for admin and doctor login
@@ -100,5 +101,51 @@ window.doctorLoginHandler = async function () {
         console.error("Doctor login error:", error);
         // Step 6: Generic fallback message
         alert("Something went wrong during doctor login. Please try again.");
+    }
+};
+
+window.signupPatient = async function () {
+    try {
+        const name = document.getElementById("name").value;
+        const email = document.getElementById("email").value;
+        const password = document.getElementById("password").value;
+        const phone = document.getElementById("phone").value;
+        const address = document.getElementById("address").value;
+
+        const data = { name, email, password, phone, address };
+        const { success, message } = await patientSignup(data);
+        if (success) {
+            alert(message);
+            document.getElementById("modal").style.display = "none";
+            window.location.reload();
+        } else {
+            alert(message);
+        }
+    } catch (error) {
+        console.error("Signup failed:", error);
+        alert("❌ An error occurred while signing up.");
+    }
+};
+
+window.loginPatient = async function () {
+    try {
+        const email = document.getElementById("email").value;
+        const password = document.getElementById("password").value;
+
+        const data = { email, password };
+        console.log("loginPatient :: ", data);
+        const response = await patientLogin(data);
+
+        if (response.ok) {
+            const result = await response.json();
+            localStorage.setItem("token", result.token);
+            selectRole("loggedPatient");
+            window.location.href = "/pages/loggedPatientDashboard.html";
+        } else {
+            alert("❌ Invalid credentials!");
+        }
+    } catch (error) {
+        console.error("Error :: loginPatient :: ", error);
+        alert("❌ Failed to Login.");
     }
 };
