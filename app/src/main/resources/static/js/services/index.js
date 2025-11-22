@@ -34,8 +34,8 @@ window.onload = function () {
 window.adminLoginHandler = async function () {
     try {
         // Step 1: Get entered username & password
-        const username = document.getElementById("adminUsername").value.trim();
-        const password = document.getElementById("adminPassword").value.trim();
+        const username = document.getElementById("username").value.trim();
+        const password = document.getElementById("password").value.trim();
 
         // Step 2: Create admin object
         const admin = { username, password };
